@@ -2,9 +2,13 @@ from numpy import sign
 from tkinter import *
 import PIL
 from PIL import Image, ImageTk
+from random import choice
+from time import sleep
 
 class App:
     def __init__(self):
+        f = frozenset
+
         self.root = Tk()
 
         self.c_width  = 500
@@ -25,6 +29,12 @@ class App:
                        (1,0):[3*(self.c_width/4),1*(self.c_height/4)],
                        (0,1):[1*(self.c_width/4),3*(self.c_height/4)],
                        (1,1):[3*(self.c_width/4),3*(self.c_height/4)]}
+
+        link_weights = [-2,-1,0,1,2]
+        self.links = {f(( (0,0) , (1,0) )): choice(link_weights),
+                      f(( (0,0) , (0,1) )): choice(link_weights),
+                      f(( (0,1) , (1,1) )): choice(link_weights),
+                      f(( (1,0) , (1,1) )): choice(link_weights)}
 
         self.oimg = Image.open("hand.png")
 
@@ -63,35 +73,43 @@ class App:
         self.c.bind("<Button-1>", self.click)
     
     def rotate(self,coord,_angle):
-        for angle in range(self.angles[coord], self.angles[coord] + _angle + sign( _angle ), sign( _angle )):
-            self.imgs[coord] = self.oimg.rotate(angle)
-            self.pimgs[coord] = ImageTk.PhotoImage(self.imgs[coord])
-            self.c.delete(self.cimgs[coord])
-            self.cimgs[coord] = self.c.create_image(self.coords[coord][0],
-                                                    self.coords[coord][1],
-                                                    anchor=CENTER,
-                                                    image=self.pimgs[coord])
-
-            self.root.update()
-
+        if (self.angles[coord] % 45 == 0) and (_angle != 0):
+            for angle in range(self.angles[coord], self.angles[coord] + _angle + sign( _angle ), sign( _angle )):
+                self.imgs[coord] = self.oimg.rotate(angle)
+                self.pimgs[coord] = ImageTk.PhotoImage(self.imgs[coord])
+                self.c.delete(self.cimgs[coord])
+                self.cimgs[coord] = self.c.create_image(self.coords[coord][0],
+                                                        self.coords[coord][1],
+                                                        anchor=CENTER,
+                                                        image=self.pimgs[coord])
+                self.root.update()
 
         self.angles[coord] += _angle
 
     def click(self,event):
+        f = frozenset
         if event.y < 250:
             if event.x < 125:
                 self.rotate((0,0),45)
+                self.rotate((0,1),45*self.links[f(((0,0),(0,1)))])
+                self.rotate((1,0),45*self.links[f(((0,0),(1,0)))])
             elif event.x >= 125 and event.x < 250:
                 self.rotate((0,0),-45)
+                self.rotate((0,1),-45*self.links[f(((0,0),(0,1)))])
+                self.rotate((1,0),-45*self.links[f(((0,0),(1,0)))])
             elif event.x >= 250 and event.x < 375:
                 self.rotate((1,0),45)
+                self.rotate((1,1),45*self.links[f(((1,0),(1,1)))])
             elif event.x >= 375:
                 self.rotate((1,0),-45)
+                self.rotate((1,1),-45*self.links[f(((1,0),(1,1)))])
         if event.y >= 250:
             if event.x < 125:
                 self.rotate((0,1),45)
+                self.rotate((1,1),45*self.links[f(((0,1),(1,1)))])
             elif event.x >= 125 and event.x < 250:
                 self.rotate((0,1),-45)
+                self.rotate((1,1),-45*self.links[f(((0,1),(1,1)))])
             elif event.x >= 250 and event.x < 375:
                 self.rotate((1,1),45)
             elif event.x >= 375:
