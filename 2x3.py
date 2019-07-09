@@ -17,7 +17,7 @@ class App:
         self.c = Canvas(self.root,
                         width=self.c_width,
                         height=self.c_height,
-                        bg="#ffffff")
+                        bg="#0000ff")
 
         self.c.grid(row=0,column=0,columnspan=4)
 
