@@ -10,6 +10,10 @@ class App:
         f = frozenset
 
         self.root = Tk()
+        self.root.title("Puzzle")
+        
+        self.title1 = Label(self.root, text="Clock Hand Puzzle", font=("ShureTechMono Nerd Font Mono",32))
+        self.title2 = Label(self.root, text="By Oliver Gaskell", font=("ShureTechMono Nerd Font Mono",24))
 
         self.c_width  = 750
         self.c_height = 500
@@ -19,7 +23,11 @@ class App:
                         height=self.c_height,
                         bg="#0000ff")
 
-        self.c.grid(row=0,column=0,columnspan=4)
+        self.title1.grid(row=0,column=0,columnspan=4)
+        self.title2.grid(row=1,column=0,columnspan=4)
+        self.c.grid     (row=2,column=0,columnspan=4)
+        
+        self.c.create_rectangle(3,3,self.c_width-3,self.c_height-3,outline="#000000",width=8)
 
         self.imgs = {}
         self.pimgs = {}
@@ -91,6 +99,8 @@ class App:
                                                 image=self.pimgs[(2,1)])
 
         self.c.bind("<Button-1>", self.click)
+    
+
     
     def rotate(self,coord,_angle):
         if (self.angles[coord] % 45 == 0) and (_angle != 0):
