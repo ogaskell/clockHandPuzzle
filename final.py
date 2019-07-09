@@ -25,7 +25,9 @@ class HButton(Button):
 
 
 
-def write_event(session, type, xcoord, ycoord, direction, timestamp=str(int(datetime.timestamp(datetime.now())*1000))):
+def write_event(session, type, xcoord, ycoord, direction, timestamp=None):
+    if timestamp == None:
+        timestamp = str(int(datetime.timestamp(datetime.now())*1000))
     with open("log-"+session+".csv", "a") as log:
         log.write(",".join([type, timestamp, str(xcoord), str(ycoord), str(direction)])+"\n")
 
