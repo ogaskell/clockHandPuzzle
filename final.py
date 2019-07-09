@@ -40,9 +40,9 @@ class App:
         self.title1 = Label(self.root, text="Clock Hand Puzzle", font=("ShureTechMono Nerd Font Mono",32), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         self.title2 = Label(self.root, text="By Oliver Gaskell", font=("ShureTechMono Nerd Font Mono",24), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         
-        self.about        = Button(self.root, text="About",        command=self.aboutwin,        highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
-        self.instructions = Button(self.root, text="Instructions", command=self.instructionswin, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
-        self.quit         = Button(self.root, text="Quit",         command=self.quitwin,         highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        self.about        = Button(self.root, text="About",        command=self.aboutwin,        highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
+        self.instructions = Button(self.root, text="Instructions", command=self.instructionswin, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
+        self.quit         = Button(self.root, text="Quit",         command=self.quitwin,         highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
 
         self.c_width  = 750
         self.c_height = 500
@@ -51,13 +51,16 @@ class App:
                         width=self.c_width,
                         height=self.c_height,
                         bg=self.colorscheme["gamebg"])
+                        
+        self.random_button = Button(self.root, text="Randomize!", command=self.randomize, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 16))
 
-        self.title1.grid      (row=0,column=0,columnspan=4,pady=5)
-        self.title2.grid      (row=1,column=0,columnspan=4,pady=5)
-        self.about.grid       (row=2,column=0,pady=5)
-        self.instructions.grid(row=2,column=1,columnspan=2,pady=5)
-        self.quit.grid        (row=2,column=3,pady=5)
-        self.c.grid           (row=3,column=0,columnspan=4,pady=5)
+        self.title1.grid       (row=0,column=0,columnspan=4,pady=5)
+        self.title2.grid       (row=1,column=0,columnspan=4,pady=5)
+        self.about.grid        (row=2,column=0,pady=5)
+        self.instructions.grid (row=2,column=1,columnspan=2,pady=5)
+        self.quit.grid         (row=2,column=3,pady=5)
+        self.c.grid            (row=3,column=0,columnspan=4,pady=5)
+        self.random_button.grid(row=4,column=0,columnspan=4,pady=5)
         
         self.c.create_rectangle(3,3,self.c_width-2,self.c_height-2,outline="#000000",width=8)
 
@@ -189,8 +192,8 @@ class App:
         self.quit_root.config(bg=self.colorscheme["bg"])
         
         self.quit_title = Label(self.quit_root, text="Are you sure you\nwant to quit?", font=("ShureTechMono Nerd Font Mono", 12), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
-        self.quit_yes   = HButton(self.quit_root, text="Yes", command=sys.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
-        self.quit_no    = HButton(self.quit_root, text="No",  command=self.quit_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        self.quit_yes   = HButton(self.quit_root, text="Yes", command=sys.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
+        self.quit_no    = HButton(self.quit_root, text="No",  command=self.quit_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
         
         self.quit_title.grid(row=0,column=0,columnspan=2,pady=5)
         self.quit_yes.grid  (row=1,column=0,pady=5)
@@ -267,9 +270,21 @@ class App:
                 self.rotate((2,0),-45*self.links[((2,1),(2,0))])
                 self.rotate((1,1),-45*self.links[((2,1),(1,1))])
         
-        def randomize(self, moves):
+        print(list(sorted(self.angles.values()))[-1])
+        if list(sorted(self.angles.values()))[-1] % 360 == 0:
+            self.win()
+        
+    def randomize(self, moves=18):
             for n in range(moves):
-                self.rotate((randint(0,2),randint(0,1)),choice(-135,-90,-45,45,90,135,180))
+                self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
+    
+    def win(self):
+        pass
+        # self.win_root = Tk()
+        # self.win_root.title("Congrats!")
+        
+        # self.win_label = Label(self.win_root, text="Well done! You solved the puzzle!", font=("ShureTechMono Nerd Font Mono",16))
+        # self.win_label.pack()
 
 if __name__ == "__main__":
     app = App()
