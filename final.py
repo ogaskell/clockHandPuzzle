@@ -2,7 +2,7 @@ from numpy import sign
 from tkinter import *
 import PIL
 from PIL import Image, ImageTk
-from random import choice
+from random import choice, randint
 from time import sleep
 import sys
 
@@ -52,12 +52,12 @@ class App:
                         height=self.c_height,
                         bg=self.colorscheme["gamebg"])
 
-        self.title1.grid      (row=0,column=0,columnspan=4)
-        self.title2.grid      (row=1,column=0,columnspan=4)
-        self.about.grid       (row=2,column=0)
-        self.instructions.grid(row=2,column=1,columnspan=2)
-        self.quit.grid        (row=2,column=3)
-        self.c.grid           (row=3,column=0,columnspan=4)
+        self.title1.grid      (row=0,column=0,columnspan=4,pady=5)
+        self.title2.grid      (row=1,column=0,columnspan=4,pady=5)
+        self.about.grid       (row=2,column=0,pady=5)
+        self.instructions.grid(row=2,column=1,columnspan=2,pady=5)
+        self.quit.grid        (row=2,column=3,pady=5)
+        self.c.grid           (row=3,column=0,columnspan=4,pady=5)
         
         self.c.create_rectangle(3,3,self.c_width-2,self.c_height-2,outline="#000000",width=8)
 
@@ -164,9 +164,9 @@ class App:
         self.about_text =  Label(self.about_root, text=self.about_content, font=("ShureTechMono Nerd Font Mono", 16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         self.about_quit =  HButton(self.about_root, text="Close", font=("ShureTechMono Nerd Font Mono", 12), command=self.about_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
         
-        self.about_title.pack()
-        self.about_text.pack()
-        self.about_quit.pack()
+        self.about_title.pack(pady=5)
+        self.about_text.pack(pady=5)
+        self.about_quit.pack(pady=5)
     
     def instructionswin(self):
         self.instructions_root = Tk()
@@ -179,9 +179,9 @@ class App:
         self.instructions_text =  Label(self.instructions_root, text=self.instructions_content, font=("ShureTechMono Nerd Font Mono", 16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         self.instructions_quit =  HButton(self.instructions_root, text="Close", font=("ShureTechMono Nerd Font Mono", 12), command=self.instructions_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
         
-        self.instructions_title.pack()
-        self.instructions_text.pack()
-        self.instructions_quit.pack()
+        self.instructions_title.pack(pady=5)
+        self.instructions_text.pack(pady=5)
+        self.instructions_quit.pack(pady=5)
     
     def quitwin(self):
         self.quit_root = Tk()
@@ -192,9 +192,9 @@ class App:
         self.quit_yes   = HButton(self.quit_root, text="Yes", command=sys.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
         self.quit_no    = HButton(self.quit_root, text="No",  command=self.quit_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
         
-        self.quit_title.grid(row=0,column=0,columnspan=2)
-        self.quit_yes.grid  (row=1,column=0)
-        self.quit_no.grid   (row=1,column=1)
+        self.quit_title.grid(row=0,column=0,columnspan=2,pady=5)
+        self.quit_yes.grid  (row=1,column=0,pady=5)
+        self.quit_no.grid   (row=1,column=1,pady=5)
     
     def rotate(self,coord,_angle):
         if (self.angles[coord] % 45 == 0) and (_angle != 0):
@@ -266,6 +266,10 @@ class App:
                 self.rotate((2,1),-45)
                 self.rotate((2,0),-45*self.links[((2,1),(2,0))])
                 self.rotate((1,1),-45*self.links[((2,1),(1,1))])
+        
+        def randomize(self, moves):
+            for n in range(moves):
+                self.rotate((randint(0,2),randint(0,1)),choice(-135,-90,-45,45,90,135,180))
 
 if __name__ == "__main__":
     app = App()
