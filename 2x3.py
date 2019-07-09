@@ -158,7 +158,7 @@ class App:
         self.about_root.title("About")
         self.about_root.config(bg=self.colorscheme["bg"])
         
-        self.about_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nVel orci porta non pulvinar neque laoreet suspendisse."
+        self.about_content = "A puzzle game created in Python3 + Tkinter \nto measure various behavioral characteristics."
         
         self.about_title = Label(self.about_root, text="About", font=("ShureTechMono Nerd Font Mono", 24), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         self.about_text =  Label(self.about_root, text=self.about_content, font=("ShureTechMono Nerd Font Mono", 16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
@@ -169,7 +169,19 @@ class App:
         self.about_quit.pack()
     
     def instructionswin(self):
-        pass
+        self.instructions_root = Tk()
+        self.instructions_root.title("Instructions")
+        self.instructions_root.config(bg=self.colorscheme["bg"])
+        
+        self.instructions_content = "Your task is to rotate the clock hands\nto make them all point upwards. However, turning\none may affect another. You need to work out what\naffects what, and use this to solve the puzzle.\n\nTo rotate a hand, click on the left or right of\nthat hand to rotate it anti-clockwise\nor clockwise respectively."
+        
+        self.instructions_title = Label(self.instructions_root, text="Instructions", font=("ShureTechMono Nerd Font Mono", 24), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.instructions_text =  Label(self.instructions_root, text=self.instructions_content, font=("ShureTechMono Nerd Font Mono", 16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.instructions_quit =  HButton(self.instructions_root, text="Close", font=("ShureTechMono Nerd Font Mono", 12), command=self.instructions_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        
+        self.instructions_title.pack()
+        self.instructions_text.pack()
+        self.instructions_quit.pack()
     
     def quitwin(self):
         self.quit_root = Tk()
