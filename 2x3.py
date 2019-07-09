@@ -59,7 +59,7 @@ class App:
         self.quit.grid        (row=2,column=3)
         self.c.grid           (row=3,column=0,columnspan=4)
         
-        self.c.create_rectangle(3,3,self.c_width-3,self.c_height-3,outline="#000000",width=8)
+        self.c.create_rectangle(3,3,self.c_width-2,self.c_height-2,outline="#000000",width=8)
 
         self.imgs = {}
         self.pimgs = {}
@@ -73,13 +73,34 @@ class App:
                        (2,1):[5*(self.c_width/6),3*(self.c_height/4)]}
 
         link_weights = [-2,-1,0,1,2]
-        self.links = {f(( (0,0) , (1,0) )): choice(link_weights),
-                      f(( (0,0) , (0,1) )): choice(link_weights),
-                      f(( (0,1) , (1,1) )): choice(link_weights),
-                      f(( (1,0) , (1,1) )): choice(link_weights),
-                      f(( (1,0) , (2,0) )): choice(link_weights),
-                      f(( (1,1) , (2,1) )): choice(link_weights),
-                      f(( (2,0) , (2,1) )): choice(link_weights)}
+        self.links = {choice([( (0,0) , (1,0) ), ( (1,0), (0,0) )]) : choice(link_weights),
+                      choice([( (0,0) , (0,1) ), ( (0,1), (0,0) )]) : choice(link_weights),
+                      choice([( (0,1) , (1,1) ), ( (1,1), (0,1) )]) : choice(link_weights),
+                      choice([( (1,0) , (1,1) ), ( (1,1), (1,0) )]) : choice(link_weights),
+                      choice([( (1,0) , (2,0) ), ( (2,0), (1,0) )]) : choice(link_weights),
+                      choice([( (1,1) , (2,1) ), ( (2,1), (1,1) )]) : choice(link_weights),
+                      choice([( (2,0) , (2,1) ), ( (2,1), (2,0) )]) : choice(link_weights)}
+        
+        self.possible_links = [( (0,0) , (1,0) ),
+                               ( (1,0) , (0,0) ),
+                               ( (0,0) , (0,1) ),
+                               ( (0,1) , (0,0) ),
+                               ( (0,1) , (1,1) ),
+                               ( (1,1) , (0,1) ),
+                               ( (1,0) , (1,1) ),
+                               ( (1,1) , (1,0) ),
+                               ( (1,0) , (2,0) ),
+                               ( (2,0) , (1,0) ),
+                               ( (1,1) , (2,1) ),
+                               ( (2,1) , (1,1) ),
+                               ( (2,0) , (2,1) ),
+                               ( (2,1) , (2,0) )]
+        
+        for n in self.possible_links:
+            try:
+                self.links[n]
+            except KeyError:
+                self.links[n] = 0
 
         self.oimg = Image.open("hand.png")
 
@@ -182,43 +203,57 @@ class App:
         if event.y < 250:
             if event.x < 125:                      # 0,0 left
                 self.rotate((0,0),45)
-                self.rotate((0,1),45*self.links[f(((0,0),(0,1)))])
-                self.rotate((1,0),45*self.links[f(((0,0),(1,0)))])
+                self.rotate((0,1),45*self.links[((0,0),(0,1))])
+                self.rotate((1,0),45*self.links[((0,0),(1,0))])
             elif event.x >= 125 and event.x < 250: # 0,0 right
                 self.rotate((0,0),-45)
-                self.rotate((0,1),-45*self.links[f(((0,0),(0,1)))])
-                self.rotate((1,0),-45*self.links[f(((0,0),(1,0)))])
+                self.rotate((0,1),-45*self.links[((0,0),(0,1))])
+                self.rotate((1,0),-45*self.links[((0,0),(1,0))])
             elif event.x >= 250 and event.x < 375: # 1,0 left
                 self.rotate((1,0),45)
-                self.rotate((1,1),45*self.links[f(((1,0),(1,1)))])
-                self.rotate((2,0),45*self.links[f(((1,0),(2,0)))])
+                self.rotate((1,1),45*self.links[((1,0),(1,1))])
+                self.rotate((2,0),45*self.links[((1,0),(2,0))])
+                self.rotate((0,0),45*self.links[((1,0),(0,0))])
             elif event.x >= 375 and event.x < 500: # 1,0 right
                 self.rotate((1,0),-45)
-                self.rotate((1,1),-45*self.links[f(((1,0),(1,1)))])
-                self.rotate((2,0),-45*self.links[f(((1,0),(2,0)))])
+                self.rotate((1,1),-45*self.links[((1,0),(1,1))])
+                self.rotate((2,0),-45*self.links[((1,0),(2,0))])
+                self.rotate((0,0),-45*self.links[((1,0),(0,0))])
             elif event.x >= 500 and event.x < 625: # 2,0 left
                 self.rotate((2,0),45)
-                self.rotate((2,1),45*self.links[f(((2,0),(2,1)))])
+                self.rotate((2,1),45*self.links[((2,0),(2,1))])
+                self.rotate((1,0),45*self.links[((2,0),(1,0))])
             elif event.x >= 625:                   # 2,0 right
                 self.rotate((2,0),-45)
-                self.rotate((2,1),-45*self.links[f(((2,0),(2,1)))])
+                self.rotate((2,1),-45*self.links[((2,0),(2,1))])
+                self.rotate((1,0),-45*self.links[((2,0),(1,0))])
         if event.y >= 250:
             if event.x < 125:                      # 0,1 left
                 self.rotate((0,1),45)
-                self.rotate((1,1),45*self.links[f(((0,1),(1,1)))])
+                self.rotate((1,1),45*self.links[((0,1),(1,1))])
+                self.rotate((0,0),45*self.links[((0,1),(0,0))])
             elif event.x >= 125 and event.x < 250: # 0,1 right
                 self.rotate((0,1),-45)
-                self.rotate((1,1),-45*self.links[f(((0,1),(1,1)))])
+                self.rotate((1,1),-45*self.links[((0,1),(1,1))])
+                self.rotate((0,0),-45*self.links[((0,1),(0,0))])
             elif event.x >= 250 and event.x < 375: # 1,1 left
                 self.rotate((1,1),45)
-                self.rotate((2,1),45*self.links[f(((1,1),(2,1)))])
+                self.rotate((2,1),45*self.links[((1,1),(2,1))])
+                self.rotate((1,0),45*self.links[((1,1),(1,0))])
+                self.rotate((0,1),45*self.links[((1,1),(0,1))])
             elif event.x >= 375 and event.x < 500: # 1,1 right
                 self.rotate((1,1),-45)
-                self.rotate((2,1),-45*self.links[f(((1,1),(2,1)))])
+                self.rotate((2,1),-45*self.links[((1,1),(2,1))])
+                self.rotate((1,0),-45*self.links[((1,1),(1,0))])
+                self.rotate((0,1),-45*self.links[((1,1),(0,1))])
             elif event.x >= 500 and event.x < 625: # 2,1 left
                 self.rotate((2,1),45)
+                self.rotate((2,0),45*self.links[((2,1),(2,0))])
+                self.rotate((1,1),45*self.links[((2,1),(1,1))])
             elif event.x >= 625:                   # 2,1 right
                 self.rotate((2,1),-45)
+                self.rotate((2,0),-45*self.links[((2,1),(2,0))])
+                self.rotate((1,1),-45*self.links[((2,1),(1,1))])
 
 if __name__ == "__main__":
     app = App()
