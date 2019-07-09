@@ -4,16 +4,45 @@ import PIL
 from PIL import Image, ImageTk
 from random import choice
 from time import sleep
+import sys
+
+class HButton(Button):
+    def __init__(self, master, **kw):
+        Button.__init__(self,master=master,**kw)
+        self.defaultBackground = self["background"]
+        self.defaultForeground = self["foreground"]
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, e):
+        self['background'] = self['activebackground']
+        self['foreground'] = self['activeforeground']
+
+    def on_leave(self, e):
+        self['background'] = self.defaultBackground
+        self['foreground'] = self.defaultForeground
+
 
 class App:
     def __init__(self):
+        self.colorscheme = {"bg":"#073642",
+                            "fg":"#eee8d5",
+                            "button":"#586e75",
+                            "gamebg":"#268bd2"}
+        
         f = frozenset
 
         self.root = Tk()
+        self.root.config(bg=self.colorscheme["bg"])
         self.root.title("Puzzle")
+        self.root.protocol("WM_DELETE_WINDOW", self.quitwin)
         
-        self.title1 = Label(self.root, text="Clock Hand Puzzle", font=("ShureTechMono Nerd Font Mono",32))
-        self.title2 = Label(self.root, text="By Oliver Gaskell", font=("ShureTechMono Nerd Font Mono",24))
+        self.title1 = Label(self.root, text="Clock Hand Puzzle", font=("ShureTechMono Nerd Font Mono",32), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.title2 = Label(self.root, text="By Oliver Gaskell", font=("ShureTechMono Nerd Font Mono",24), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        
+        self.about        = Button(self.root, text="About",        command=self.aboutwin,        highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        self.instructions = Button(self.root, text="Instructions", command=self.instructionswin, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        self.quit         = Button(self.root, text="Quit",         command=self.quitwin,         highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
 
         self.c_width  = 750
         self.c_height = 500
@@ -21,11 +50,14 @@ class App:
         self.c = Canvas(self.root,
                         width=self.c_width,
                         height=self.c_height,
-                        bg="#0000ff")
+                        bg=self.colorscheme["gamebg"])
 
-        self.title1.grid(row=0,column=0,columnspan=4)
-        self.title2.grid(row=1,column=0,columnspan=4)
-        self.c.grid     (row=2,column=0,columnspan=4)
+        self.title1.grid      (row=0,column=0,columnspan=4)
+        self.title2.grid      (row=1,column=0,columnspan=4)
+        self.about.grid       (row=2,column=0)
+        self.instructions.grid(row=2,column=1,columnspan=2)
+        self.quit.grid        (row=2,column=3)
+        self.c.grid           (row=3,column=0,columnspan=4)
         
         self.c.create_rectangle(3,3,self.c_width-3,self.c_height-3,outline="#000000",width=8)
 
@@ -100,7 +132,36 @@ class App:
 
         self.c.bind("<Button-1>", self.click)
     
-
+    def aboutwin(self):
+        self.about_root = Tk()
+        self.about_root.title("About")
+        self.about_root.config(bg=self.colorscheme["bg"])
+        
+        self.about_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nVel orci porta non pulvinar neque laoreet suspendisse."
+        
+        self.about_title = Label(self.about_root, text="About", font=("ShureTechMono Nerd Font Mono", 24), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.about_text =  Label(self.about_root, text=self.about_content, font=("ShureTechMono Nerd Font Mono", 16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.about_quit =  HButton(self.about_root, text="Close", font=("ShureTechMono Nerd Font Mono", 12), command=self.about_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        
+        self.about_title.pack()
+        self.about_text.pack()
+        self.about_quit.pack()
+    
+    def instructionswin(self):
+        pass
+    
+    def quitwin(self):
+        self.quit_root = Tk()
+        self.quit_root.title("Quit")
+        self.quit_root.config(bg=self.colorscheme["bg"])
+        
+        self.quit_title = Label(self.quit_root, text="Are you sure you\nwant to quit?", font=("ShureTechMono Nerd Font Mono", 12), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.quit_yes   = HButton(self.quit_root, text="Yes", command=sys.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        self.quit_no    = HButton(self.quit_root, text="No",  command=self.quit_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"])
+        
+        self.quit_title.grid(row=0,column=0,columnspan=2)
+        self.quit_yes.grid  (row=1,column=0)
+        self.quit_no.grid   (row=1,column=1)
     
     def rotate(self,coord,_angle):
         if (self.angles[coord] % 45 == 0) and (_angle != 0):
