@@ -270,21 +270,20 @@ class App:
                 self.rotate((2,0),-45*self.links[((2,1),(2,0))])
                 self.rotate((1,1),-45*self.links[((2,1),(1,1))])
         
-        print(list(sorted(self.angles.values()))[-1])
-        if list(sorted(self.angles.values()))[-1] % 360 == 0:
-            self.win()
+        if all( list( map ( lambda x: (x%360) == 0 , self.angles.values() ) ) ):
+            self.win() 
         
     def randomize(self, moves=18):
             for n in range(moves):
                 self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
     
     def win(self):
-        pass
-        # self.win_root = Tk()
-        # self.win_root.title("Congrats!")
+        self.win_root = Tk()
+        self.win_root.title("Congrats!")
+        self.win_root.config(bg=self.colorscheme["bg"])
         
-        # self.win_label = Label(self.win_root, text="Well done! You solved the puzzle!", font=("ShureTechMono Nerd Font Mono",16))
-        # self.win_label.pack()
+        self.win_label = Label(self.win_root, text="Well done! You solved the puzzle!", font=("ShureTechMono Nerd Font Mono",16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
+        self.win_label.pack()
 
 if __name__ == "__main__":
     app = App()
