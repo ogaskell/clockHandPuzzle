@@ -1,6 +1,6 @@
 # Clock Hand Puzzle
 
-A puzzle game made with Python3 + Tkinterm based around the idea of rotating "clock" hands.
+A puzzle game made with Python3 + Tkinter based around the idea of rotating "clock" hands.
 
 ![Screenshot](screenshot.png)
 
