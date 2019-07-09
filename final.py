@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from random import choice, randint
 from time import sleep
 import sys
+from datetime import datetime
 
 class HButton(Button):
     def __init__(self, master, **kw):
@@ -21,6 +22,12 @@ class HButton(Button):
     def on_leave(self, e):
         self['background'] = self.defaultBackground
         self['foreground'] = self.defaultForeground
+
+
+
+def write_event(session, type, xcoord, ycoord, direction):
+    with open("log-"+session+".csv", "a") as log:
+        log.write(",".join([type, str(int(datetime.timestamp(datetime.now())*1000)), str(xcoord), str(ycoord), str(direction)])+"\n")
 
 
 class App:
@@ -192,12 +199,16 @@ class App:
         self.quit_root.config(bg=self.colorscheme["bg"])
         
         self.quit_title = Label(self.quit_root, text="Are you sure you\nwant to quit?", font=("ShureTechMono Nerd Font Mono", 12), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
-        self.quit_yes   = HButton(self.quit_root, text="Yes", command=sys.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
+        self.quit_yes   = HButton(self.quit_root, text="Yes", command=self.exit, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
         self.quit_no    = HButton(self.quit_root, text="No",  command=self.quit_root.destroy, highlightbackground=self.colorscheme["button"], bg=self.colorscheme["bg"], fg=self.colorscheme["fg"], activebackground=self.colorscheme["fg"], activeforeground=self.colorscheme["bg"], font=("ShureTechMono Nerd Font Mono", 12))
         
         self.quit_title.grid(row=0,column=0,columnspan=2,pady=5)
         self.quit_yes.grid  (row=1,column=0,pady=5)
         self.quit_no.grid   (row=1,column=1,pady=5)
+    
+    def exit(self):
+        write_event(self.session, "quit", "", "", "")
+        sys.exit()
     
     def rotate(self,coord,_angle):
         if (self.angles[coord] % 45 == 0) and (_angle != 0):
@@ -214,6 +225,7 @@ class App:
         self.angles[coord] += _angle
 
     def click(self,event):
+        write_event(self.session,"rotate",event.x//250,event.y//250,(2*((event.x//125)%2))-1)
         f = frozenset
         if event.y < 250:
             if event.x < 125:                      # 0,0 left
@@ -274,10 +286,13 @@ class App:
             self.win() 
         
     def randomize(self, moves=18):
-            for n in range(moves):
-                self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
+        self.session = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        write_event(self.session, "start", "", "", "")
+        for n in range(moves):
+            self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
     
     def win(self):
+        write_event(self.session, "solve", "", "", "")
         self.win_root = Tk()
         self.win_root.title("Congrats!")
         self.win_root.config(bg=self.colorscheme["bg"])
