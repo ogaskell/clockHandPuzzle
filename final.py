@@ -25,9 +25,9 @@ class HButton(Button):
 
 
 
-def write_event(session, type, xcoord, ycoord, direction):
+def write_event(session, type, xcoord, ycoord, direction, timestamp=str(int(datetime.timestamp(datetime.now())*1000))):
     with open("log-"+session+".csv", "a") as log:
-        log.write(",".join([type, str(int(datetime.timestamp(datetime.now())*1000)), str(xcoord), str(ycoord), str(direction)])+"\n")
+        log.write(",".join([type, timestamp, str(xcoord), str(ycoord), str(direction)])+"\n")
 
 
 class App:
@@ -287,6 +287,7 @@ class App:
         
     def randomize(self, moves=18):
         self.session = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        write_event(self.session, "event", "xcoord", "ycoord", "direction", "timestamp")
         write_event(self.session, "start", "", "", "")
         for n in range(moves):
             self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
