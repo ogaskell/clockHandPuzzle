@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from numpy import sign
 from tkinter import *
 import PIL
@@ -211,7 +213,10 @@ class App:
         self.quit_no.grid   (row=1,column=1,pady=5)
     
     def exit(self):
-        write_event(self.session, "quit", "", "", "")
+        try:
+            write_event(self.session, "quit", "", "", "")
+        except:
+            pass
         sys.exit()
     
     def rotate(self,coord,_angle):
@@ -308,7 +313,7 @@ class App:
         write_event(self.session,"button3_size",self.random_button.winfo_width(),self.random_button.winfo_height(),"")
         
         if self.trackmouse_event is not None:
-            root.after_kill(root.trackmouse_event)
+            self.root.after_cancel(self.trackmouse_event)
         self.trackmouse_event = self.root.after(1, self.trackmouse)
         for n in range(moves):
             self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
