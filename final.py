@@ -10,6 +10,7 @@ import sys
 from datetime import datetime
 
 class HButton(Button):
+    '''Tkinter button that changes color on hover'''
     def __init__(self, master, **kw):
         Button.__init__(self,master=master,**kw)
         self.defaultBackground = self["background"]
@@ -27,7 +28,8 @@ class HButton(Button):
 
 
 
-def write_event(session, type, xcoord, ycoord, direction, timestamp=None):
+def write_event(session: str, type: str, xcoord: int, ycoord: int, direction: int, timestamp=None: str) -> None:
+    '''write event to file'''
     if timestamp == None:
         timestamp = str(int(datetime.timestamp(datetime.now())*1000))
     with open("log-"+session+".csv", "a") as log:
@@ -236,7 +238,7 @@ class App:
     def click(self,event):
         write_event(self.session,"rotate",event.x//250,event.y//250,(2*((event.x//125)%2))-1)
         write_event(self.session,"click",event.x,event.y,"")
-        f = frozenset
+        
         if event.y < 250:
             if event.x < 125:                      # 0,0 left
                 self.rotate((0,0),45)
