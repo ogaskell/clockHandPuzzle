@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from numpy import sign
 from tkinter import *
 import PIL
@@ -8,6 +10,7 @@ import sys
 from datetime import datetime
 
 class HButton(Button):
+    '''Tkinter button that changes color on hover'''
     def __init__(self, master, **kw):
         Button.__init__(self,master=master,**kw)
         self.defaultBackground = self["background"]
@@ -25,7 +28,8 @@ class HButton(Button):
 
 
 
-def write_event(session, type, xcoord, ycoord, direction, timestamp=None):
+def write_event(session: str, type: str, xcoord: int, ycoord: int, direction: int, timestamp=None: str) -> None:
+    '''write event to file'''
     if timestamp == None:
         timestamp = str(int(datetime.timestamp(datetime.now())*1000))
     with open("log-"+session+".csv", "a") as log:
@@ -38,6 +42,8 @@ class App:
                             "fg":"#eee8d5",
                             "button":"#586e75",
                             "gamebg":"#268bd2"}
+        
+        self.trackmouse_event = None
         
         f = frozenset
 
@@ -209,7 +215,10 @@ class App:
         self.quit_no.grid   (row=1,column=1,pady=5)
     
     def exit(self):
-        write_event(self.session, "quit", "", "", "")
+        try:
+            write_event(self.session, "quit", "", "", "")
+        except:
+            pass
         sys.exit()
     
     def rotate(self,coord,_angle):
@@ -228,7 +237,8 @@ class App:
 
     def click(self,event):
         write_event(self.session,"rotate",event.x//250,event.y//250,(2*((event.x//125)%2))-1)
-        f = frozenset
+        write_event(self.session,"click",event.x,event.y,"")
+        
         if event.y < 250:
             if event.x < 125:                      # 0,0 left
                 self.rotate((0,0),45)
@@ -291,6 +301,22 @@ class App:
         self.session = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         write_event(self.session, "event", "xcoord", "ycoord", "direction", "timestamp")
         write_event(self.session, "start", "", "", "")
+        write_event(self.session,"win_dimensions",self.root.winfo_width(),self.root.winfo_height(),"")
+        write_event(self.session,"canvas_pos",self.c.winfo_x(),self.c.winfo_y(),"")
+        write_event(self.session,"button0_pos",self.about.winfo_x(),self.about.winfo_y(),"")
+        write_event(self.session,"button1_pos",self.instructions.winfo_x(),self.instructions.winfo_y(),"")
+        write_event(self.session,"button2_pos",self.quit.winfo_x(),self.quit.winfo_y(),"")
+        write_event(self.session,"button3_pos",self.random_button.winfo_x(),self.random_button.winfo_y(),"")
+        
+        write_event(self.session,"canvas_size",self.c.winfo_width(),self.c.winfo_height(),"")
+        write_event(self.session,"button0_size",self.about.winfo_width(),self.about.winfo_height(),"")
+        write_event(self.session,"button1_size",self.instructions.winfo_width(),self.instructions.winfo_height(),"")
+        write_event(self.session,"button2_size",self.quit.winfo_width(),self.quit.winfo_height(),"")
+        write_event(self.session,"button3_size",self.random_button.winfo_width(),self.random_button.winfo_height(),"")
+        
+        if self.trackmouse_event is not None:
+            self.root.after_cancel(self.trackmouse_event)
+        self.trackmouse_event = self.root.after(1, self.trackmouse)
         for n in range(moves):
             self.rotate((randint(0,2),randint(0,1)),choice([-135,-90,-45,45,90,135,180]))
     
@@ -302,6 +328,16 @@ class App:
         
         self.win_label = Label(self.win_root, text="Well done! You solved the puzzle!", font=("ShureTechMono Nerd Font Mono",16), bg=self.colorscheme["bg"], fg=self.colorscheme["fg"])
         self.win_label.pack()
+    
+    def trackmouse(self):
+        x = self.root.winfo_pointerx() - self.root.winfo_rootx()
+        y = self.root.winfo_pointery() - self.root.winfo_rooty()
+        if x < 0 or x > self.root.winfo_width() or y < 0 or y > self.root.winfo_height():
+            x = -1
+            y = -1
+            
+        write_event(self.session, "mouse", x, y, "")
+        self.trackmouse_event = self.root.after(25, self.trackmouse)
 
 if __name__ == "__main__":
     app = App()
